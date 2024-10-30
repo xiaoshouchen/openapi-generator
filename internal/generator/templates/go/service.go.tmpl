@@ -1,0 +1,21 @@
+package {{.packageName}}
+
+import (
+     "github.com/gin-gonic/gin"
+    {{- range $k,$v:=.importData}}
+     {{$k}} "{{$v}}"
+    {{- end}}
+)
+type {{.funcName}}Service struct {
+    ctx *gin.Context
+}
+func New{{.funcName}}Service(ctx *gin.Context)*{{.funcName}}Service {
+    return &{{.funcName}}Service{ctx:ctx}
+}
+
+func (s *{{.funcName}}Service){{.funcName}}(request  *{{.reqShortPath}}.{{.funcName}}Req) (  *{{.respShortPath}}.{{.funcName}}Resp,error) {
+	resp := new({{.respShortPath}}.{{.funcName}}Resp)
+	 //TODO
+	return resp, nil
+
+}

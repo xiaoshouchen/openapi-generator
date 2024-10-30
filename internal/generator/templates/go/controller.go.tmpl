@@ -1,0 +1,25 @@
+package {{.packageName}}
+
+import (
+     "github.com/gin-gonic/gin"
+     "panda-trip/internal/server/response"
+
+    {{- range $k,$v := .importData}}
+     {{$k}} "{{$v}}"
+    {{- end}}
+)
+
+func {{.funcName}}(ctx *gin.Context) {
+  var  request {{.reqShortPath}}.{{.reqName}}
+  if err := ctx.ShouldBind(&request); err != nil {
+ 		response.Fail(ctx, err.Error(), nil)
+ 		return
+    }
+    service := {{.svcShortPath}}.New{{.funcName}}Service(ctx)
+    result, err :=  service.{{.funcName}}(&request)
+	if err != nil {
+		response.Fail(ctx, err.Error(), nil)
+    	return
+	}
+	response.Success(ctx, result)
+}

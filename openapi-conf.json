@@ -1,0 +1,13 @@
+{
+  "aim_type": "go",
+  "out_path": "gen",
+  "package_name": "panda-trip",
+  "fetcher": {
+    "from": "file",
+    "api_fox": {
+      "token": "",
+      "project_id": 1123
+    },
+    "file": "./openapi.json"
+  }
+}
