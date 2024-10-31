@@ -66,7 +66,7 @@ func (g *GoGenerator) Service(path, file string, f template.FuncMap, data map[st
 		source = bytes
 		log.Printf("service 格式化失败,%s,%v", file, err)
 	}
-	write(source, path, file, true)
+	write(source, path, file, false)
 	return nil
 }
 

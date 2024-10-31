@@ -30,3 +30,27 @@ func TestFormatDescription(t *testing.T) {
 		})
 	}
 }
+
+func TestGetTopLevelName(t *testing.T) {
+	type args struct {
+		path string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			"api/user/login",
+			args{path: "api/user/login"},
+			"api",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := GetTopLevelName(tt.args.path); got != tt.want {
+				t.Errorf("GetTopLevelName() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

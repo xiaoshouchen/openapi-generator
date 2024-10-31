@@ -72,3 +72,12 @@ func GetPackageName(path string) string {
 	}
 	return paths[len(paths)-2]
 }
+
+func GetTopLevelName(path string) string {
+	path = strings.Trim(path, "/")
+	paths := strings.Split(path, "/")
+	if len(paths) <= 1 {
+		return ""
+	}
+	return paths[0]
+}

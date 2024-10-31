@@ -6,3 +6,8 @@ type RouterItem struct {
 	ShortPath string
 	FuncName  string
 }
+
+type Router struct {
+	Items   []RouterItem
+	Imports []string
+}

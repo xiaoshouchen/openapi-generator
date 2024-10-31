@@ -19,10 +19,9 @@ func NewGolang(config model.Config) *Golang {
 }
 
 // Process the json data
-// TODO support form data
+// TODO support formData
 func (g *Golang) Process(schema *model.OpenAPISchema, generator generator.Generator) {
-	var routers []goModel.RouterItem
-	var routerImport []string
+	var routers = make(map[string]*goModel.Router)
 	for path, item := range schema.Paths {
 		var router goModel.RouterItem
 		var method string
@@ -92,9 +91,14 @@ func (g *Golang) Process(schema *model.OpenAPISchema, generator generator.Genera
 		router.Method = method
 		router.FuncName = pkg.GetFuncName(path)
 		router.ShortPath = packName
-		routers = append(routers, router)
-
-		routerImport = append(routerImport, controllerImportPath)
+		if routers[pkg.GetTopLevelName(path)] == nil {
+			routers[pkg.GetTopLevelName(path)] = &goModel.Router{
+				Items:   make([]goModel.RouterItem, 0),
+				Imports: make([]string, 0),
+			}
+		}
+		routers[pkg.GetTopLevelName(path)].Items = append(routers[pkg.GetTopLevelName(path)].Items, router)
+		routers[pkg.GetTopLevelName(path)].Imports = append(routers[pkg.GetTopLevelName(path)].Imports, controllerImportPath)
 
 		generator.Request(g.config.OutPath, "server/request/"+path+".go", FuncMap(), map[string]interface{}{
 			"structs":     structs,
@@ -129,11 +133,15 @@ func (g *Golang) Process(schema *model.OpenAPISchema, generator generator.Genera
 			"respShortPath": respShortPath,
 		})
 	}
-	generator.Router(g.config.OutPath, "router/router.go", FuncMap(), map[string]interface{}{
-		"packageName": "router",
-		"importData":  routerImport,
-		"routers":     routers,
-	})
+
+	for k, v := range routers {
+		generator.Router(g.config.OutPath, "router/"+k+".go", FuncMap(), map[string]interface{}{
+			"routerName": k,
+			"importData": v.Imports,
+			"routers":    v.Items,
+		})
+	}
+
 }
 
 func (g *Golang) GoTypeMap(t string) string {
