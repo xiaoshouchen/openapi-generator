@@ -31,9 +31,9 @@ func (g *Golang) Process(schema *model.OpenAPISchema, generator generator.Genera
 		respImportPath := g.config.ProjectName + "/" + g.config.OutPath + "/" + "server/response" + filepath.Dir(path+".go")
 		svcImportPath := g.config.ProjectName + "/" + g.config.OutPath + "/" + "service" + filepath.Dir(path+".go")
 		controllerImportPath := g.config.ProjectName + "/" + g.config.OutPath + "/" + "server/controller" + filepath.Dir(path+".go")
-		reqShortPath := packName + "Request"
-		respShortPath := packName + "Response"
-		svcShortPath := packName + "Service"
+		reqShortPath := packName + "_request"
+		respShortPath := packName + "_response"
+		svcShortPath := packName + "_service"
 
 		var getRequest goModel.RequestStruct
 		var postRequests []goModel.RequestStruct

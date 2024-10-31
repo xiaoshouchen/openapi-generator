@@ -5,17 +5,17 @@ import (
      "panda-trip/internal/server/response"
 
     {{- range $k,$v := .importData}}
-     {{$k}} "{{$v}}"
+     {{$k|lowCamel}} "{{$v}}"
     {{- end}}
 )
 
 func {{.funcName}}(ctx *gin.Context) {
-  var  request {{.reqShortPath}}.{{.reqName}}
+  var  request {{.reqShortPath|lowCamel}}.{{.reqName}}
   if err := ctx.ShouldBind(&request); err != nil {
  		response.Fail(ctx, err.Error(), nil)
  		return
     }
-    service := {{.svcShortPath}}.New{{.funcName}}Service(ctx)
+    service := {{.svcShortPath|lowCamel}}.New{{.funcName}}Service(ctx)
     result, err :=  service.{{.funcName}}(&request)
 	if err != nil {
 		response.Fail(ctx, err.Error(), nil)
