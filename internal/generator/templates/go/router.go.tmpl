@@ -4,11 +4,13 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 
-   {{- range importData}}
-     "{{.}}"
+   {{- range $v:= .importData}}
+     "{{$v}}"
     {{- end}}
 )
 
-func Init{{.FuncName}}(ctx *gin.RouterGroup) {
-{{.Content}}
+func InitRouter(ctx *gin.Engine) {
+{{- range $k,$v:= .routers}}
+ctx.{{$v.Method}}("{{$v.Path}}",{{$v.ShortPath}}.{{$v.FuncName}})
+{{- end}}
 }

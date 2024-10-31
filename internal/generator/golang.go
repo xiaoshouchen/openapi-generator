@@ -69,6 +69,17 @@ func (g *GoGenerator) Service(path, file string, f template.FuncMap, data map[st
 	write(source, path, file, true)
 	return nil
 }
+
+//go:embed templates/go/router.go.tmpl
+var routerTpl string
+
 func (g *GoGenerator) Router(path, file string, f template.FuncMap, data map[string]interface{}) error {
+	bytes := genTpl(routerTpl, f, data)
+	source, err := format.Source(bytes)
+	if err != nil {
+		source = bytes
+		log.Printf("router 格式化失败,%s,%v", file, err)
+	}
+	write(source, path, file, true)
 	return nil
 }

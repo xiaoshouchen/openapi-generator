@@ -9,9 +9,9 @@ type Config struct {
 
 type Fetcher struct {
 	From   string `json:"from"`
-	ApiFox struct {
+	Apifox struct {
 		Token     string `json:"token"`
-		ProjectId int    `json:"project_id"`
-	} `json:"api_fox"`
+		ProjectId int64  `json:"project_id"`
+	} `json:"apifox"`
 	File string `json:"file"`
 }

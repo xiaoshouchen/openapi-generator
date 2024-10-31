@@ -11,6 +11,8 @@ func NewFetcher(fetcherConfig model.Fetcher) (Fetcher, error) {
 	switch fetcherConfig.From {
 	case "file":
 		fetcher = NewFileFetcher(fetcherConfig.File)
+	case "apifox":
+		fetcher = NewApifoxFetcher(fetcherConfig)
 	}
 	return fetcher, nil
 }

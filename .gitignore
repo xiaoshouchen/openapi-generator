@@ -1,3 +1,4 @@
 .idea
 openapi.json
 gen
+/openapi-conf.json

@@ -21,12 +21,17 @@ func NewGolang(config model.Config) *Golang {
 // Process the json data
 // TODO support form data
 func (g *Golang) Process(schema *model.OpenAPISchema, generator generator.Generator) {
+	var routers []goModel.RouterItem
+	var routerImport []string
 	for path, item := range schema.Paths {
+		var router goModel.RouterItem
+		var method string
 		// packageName
 		packName := pkg.GetPackageName(path)
-		reqImportPath := g.config.ProjectName + "/" + g.config.OutPath + "/" + "server/request/" + filepath.Dir(path+".go")
-		respImportPath := g.config.ProjectName + "/" + g.config.OutPath + "/" + "server/response/" + filepath.Dir(path+".go")
-		svcImportPath := g.config.ProjectName + "/" + g.config.OutPath + "/" + "server/response/" + filepath.Dir(path+".go")
+		reqImportPath := g.config.ProjectName + "/" + g.config.OutPath + "/" + "server/request" + filepath.Dir(path+".go")
+		respImportPath := g.config.ProjectName + "/" + g.config.OutPath + "/" + "server/response" + filepath.Dir(path+".go")
+		svcImportPath := g.config.ProjectName + "/" + g.config.OutPath + "/" + "service" + filepath.Dir(path+".go")
+		controllerImportPath := g.config.ProjectName + "/" + g.config.OutPath + "/" + "server/controller" + filepath.Dir(path+".go")
 		reqShortPath := packName + "Request"
 		respShortPath := packName + "Response"
 		svcShortPath := packName + "Service"
@@ -37,6 +42,7 @@ func (g *Golang) Process(schema *model.OpenAPISchema, generator generator.Genera
 
 		var responseStructs []goModel.ResponseStruct
 		if item.Post != nil {
+			method = "POST"
 			// Request 逻辑
 			sch := item.Post.RequestBody.Content["application/json"].Schema
 			if schSch := sch.Schema; schSch != nil {
@@ -67,6 +73,7 @@ func (g *Golang) Process(schema *model.OpenAPISchema, generator generator.Genera
 
 		}
 		if item.Get != nil {
+			method = "GET"
 			getRequest = g.ProcessGetRequest(pkg.GetRequestName(path), item.Get.Parameters)
 			structs = append(structs, getRequest)
 
@@ -80,6 +87,14 @@ func (g *Golang) Process(schema *model.OpenAPISchema, generator generator.Genera
 				}
 			}
 		}
+
+		router.Path = path
+		router.Method = method
+		router.FuncName = pkg.GetFuncName(path)
+		router.ShortPath = packName
+		routers = append(routers, router)
+
+		routerImport = append(routerImport, controllerImportPath)
 
 		generator.Request(g.config.OutPath, "server/request/"+path+".go", FuncMap(), map[string]interface{}{
 			"structs":     structs,
@@ -114,6 +129,11 @@ func (g *Golang) Process(schema *model.OpenAPISchema, generator generator.Genera
 			"respShortPath": respShortPath,
 		})
 	}
+	generator.Router(g.config.OutPath, "router/router.go", FuncMap(), map[string]interface{}{
+		"packageName": "router",
+		"importData":  routerImport,
+		"routers":     routers,
+	})
 }
 
 func (g *Golang) GoTypeMap(t string) string {

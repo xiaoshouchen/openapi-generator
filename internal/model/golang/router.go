@@ -1,12 +1,8 @@
 package golang
 
-type RouteItem struct {
-	Method string
-	Import string
-	Path   string
-}
-
-type RouteGroup struct {
-	Name  string
-	Items []RouteItem
+type RouterItem struct {
+	Method    string
+	Path      string
+	ShortPath string
+	FuncName  string
 }
