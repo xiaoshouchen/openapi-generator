@@ -135,7 +135,7 @@ func (g *Golang) Process(schema *model.OpenAPISchema, generator generator.Genera
 	}
 
 	for k, v := range routers {
-		generator.Router(g.config.OutPath, "router/"+k+".go", FuncMap(), map[string]interface{}{
+		generator.Router(g.config.OutPath, "server/router/"+k+".go", FuncMap(), map[string]interface{}{
 			"routerName": k,
 			"importData": v.Imports,
 			"routers":    v.Items,
@@ -196,12 +196,12 @@ func (g *Golang) processPostRequest(bindType, name string, schema model.SchemaPr
 		}
 		req.DataType = g.GoTypeMap(v.Type)
 		if req.DataType == "object" {
-			req.DataType = "" + k
+			req.DataType = name + pkg.LineToUpCamel(k)
 			structs = g.processPostRequest(bindType, name+pkg.LineToUpCamel(k), v.Properties, structs, v.Required)
 		}
 		if req.DataType == "array" {
 			var items *model.Schema
-			req.DataType, items = g.arrayType(v.Items, k)
+			req.DataType, items = g.arrayType(v.Items, k, "[]")
 			if items != nil {
 				structs = g.processPostRequest(bindType, name, items.Properties, structs, items.Required)
 			}
@@ -226,7 +226,7 @@ func (g *Golang) processResponse(name string, schema model.SchemaProperties, str
 		}
 		if resp.DataType == "array" {
 			var items *model.Schema
-			resp.DataType, items = g.arrayType(v.Items, name+pkg.LineToUpCamel(k))
+			resp.DataType, items = g.arrayType(v.Items, name+pkg.LineToUpCamel(k), "[]")
 			if items != nil {
 				structs = g.processResponse(name+pkg.LineToUpCamel(k), items.Properties, structs)
 			}
@@ -238,22 +238,18 @@ func (g *Golang) processResponse(name string, schema model.SchemaProperties, str
 	return structs
 }
 
-func (g *Golang) arrayType(t *model.SchemaOrArray, parentName string) (string, *model.Schema) {
+func (g *Golang) arrayType(t *model.SchemaOrArray, parentName string, prefix string) (string, *model.Schema) {
 	if t == nil {
-		return "", nil
+		return "[]interface{}", nil
 	}
 	if t.Schema == nil {
 		return "[]interface{}", nil
 	}
 	if t.Schema.Type == "object" {
-		return "[]" + parentName, t.Schema
+		return prefix + parentName, t.Schema
 	}
 	if t.Schema.Type == "array" {
-		return g.arrayType(t.Schema.Items, "[]"+parentName)
+		return g.arrayType(t.Schema.Items, parentName, prefix+"[]")
 	}
-	return t.Schema.Type, nil
-}
-
-func (g *Golang) processController() {
-
+	return prefix + g.GoTypeMap(t.Schema.Type), nil
 }

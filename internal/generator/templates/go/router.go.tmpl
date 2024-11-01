@@ -9,7 +9,7 @@ import (
     {{- end}}
 )
 
-func Init{{.routerName | upCamel}}Router(ctx *gin.Engine) {
+func Init{{.routerName | upCamel}}Router(ctx *gin.RouterGroup) {
 {{- range $k,$v:= .routers}}
 ctx.{{$v.Method}}("{{$v.Path}}",{{$v.ShortPath}}.{{$v.FuncName}})
 {{- end}}

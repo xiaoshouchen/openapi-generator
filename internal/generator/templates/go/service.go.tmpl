@@ -2,6 +2,8 @@ package {{.packageName}}
 
 import (
      "github.com/gin-gonic/gin"
+     "panda-trip/internal/enum/sys_cache"
+
     {{- range $k,$v:=.importData}}
      {{$k|lowCamel}} "{{$v}}"
     {{- end}}
@@ -13,9 +15,12 @@ func New{{.funcName}}Service(ctx *gin.Context)*{{.funcName}}Service {
     return &{{.funcName}}Service{ctx:ctx}
 }
 
-func (s *{{.funcName}}Service){{.funcName}}(request  *{{.reqShortPath}}.{{.funcName}}Req) (  *{{.respShortPath}}.{{.funcName}}RespData,error) {
-	resp := new({{.respShortPath|lowCamel}}.{{.funcName}}RespData)
-	 //TODO
-	return resp, nil
+func (s *{{.funcName}}Service){{.funcName}}(request  *{{.reqShortPath|lowCamel}}.{{.funcName}}Req) *{{.respShortPath|lowCamel}}.{{.funcName}}Resp {
+	resp := &{{.respShortPath|lowCamel}}.{{.funcName}}Resp{
+        Code:    sys_cache.ResponseCodeSuccess,
+        Message: sys_cache.ResponseMessageSuccess,
+	}
+	//TODO
+	return resp
 
 }
