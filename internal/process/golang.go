@@ -190,6 +190,10 @@ func (g *Golang) processPostRequest(bindType, name string, schema model.SchemaPr
 		req.Validate, req.Description = pkg.FormatDescription(v.Description)
 		if in.InArray(k) {
 			req.Validate = strings.Join([]string{"required", req.Validate}, ",")
+		} else {
+			if req.Validate != "" {
+				req.Validate = strings.Join([]string{"omitempty", req.Validate}, ",")
+			}
 		}
 		if temp := strings.Trim(req.Validate, ","); temp != "" {
 			req.Validate = temp
