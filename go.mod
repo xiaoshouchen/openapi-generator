@@ -1,4 +1,4 @@
-module github.com/xiaoshouchen/openapi-go-generator
+module github.com/xiaoshouchen/openapi-generator
 
 go 1.20
 
