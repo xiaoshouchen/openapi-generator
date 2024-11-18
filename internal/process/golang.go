@@ -156,6 +156,10 @@ func (g *Golang) Process(schema *model.OpenAPISchema, generator generator.Genera
 	}
 
 	for k, v := range routers {
+		var items = v.Items
+		sort.Slice(items, func(i, j int) bool {
+			return items[i].Path < items[j].Path
+		})
 		generator.Router(g.config.OutPath, "server/router/"+k+".go", FuncMap(), map[string]interface{}{
 			"routerName": k,
 			"importData": v.Imports,
