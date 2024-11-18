@@ -1,10 +1,10 @@
 package process
 
 import (
-	"github.com/xiaoshouchen/openapi-go-generator/internal/generator"
-	"github.com/xiaoshouchen/openapi-go-generator/internal/model"
-	goModel "github.com/xiaoshouchen/openapi-go-generator/internal/model/golang"
-	"github.com/xiaoshouchen/openapi-go-generator/pkg"
+	"github.com/xiaoshouchen/openapi-generator/internal/generator"
+	"github.com/xiaoshouchen/openapi-generator/internal/model"
+	goModel "github.com/xiaoshouchen/openapi-generator/internal/model/golang"
+	"github.com/xiaoshouchen/openapi-generator/pkg"
 	"log"
 	"path/filepath"
 	"sort"

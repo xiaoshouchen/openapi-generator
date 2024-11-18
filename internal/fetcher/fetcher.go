@@ -1,6 +1,6 @@
 package fetcher
 
-import "github.com/xiaoshouchen/openapi-go-generator/internal/model"
+import "github.com/xiaoshouchen/openapi-generator/internal/model"
 
 type Fetcher interface {
 	Bytes() ([]byte, error)

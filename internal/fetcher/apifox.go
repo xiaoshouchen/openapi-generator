@@ -3,7 +3,7 @@ package fetcher
 import (
 	"bytes"
 	"fmt"
-	"github.com/xiaoshouchen/openapi-go-generator/internal/model"
+	"github.com/xiaoshouchen/openapi-generator/internal/model"
 	"io"
 	"net/http"
 )

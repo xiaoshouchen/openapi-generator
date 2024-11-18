@@ -1,9 +1,9 @@
 package process
 
 import (
-	"github.com/xiaoshouchen/openapi-go-generator/internal/generator"
-	"github.com/xiaoshouchen/openapi-go-generator/internal/model"
-	"github.com/xiaoshouchen/openapi-go-generator/pkg"
+	"github.com/xiaoshouchen/openapi-generator/internal/generator"
+	"github.com/xiaoshouchen/openapi-generator/internal/model"
+	"github.com/xiaoshouchen/openapi-generator/pkg"
 	"html/template"
 	"log"
 )

@@ -1,7 +1,7 @@
 package generator
 
 import (
-	goModel "github.com/xiaoshouchen/openapi-go-generator/internal/model/golang"
+	goModel "github.com/xiaoshouchen/openapi-generator/internal/model/golang"
 	"html/template"
 	"testing"
 )

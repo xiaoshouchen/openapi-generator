@@ -1,6 +1,6 @@
-# openapi-go-generator
+# openapi-generator
 
-    openapi-go-generator is a simple tool for generating Go client and server code from OpenAPI v3 specifications.
+    openapi-generator is a simple tool for generating Go client and server code from OpenAPI v3 specifications.
 
 ## Installation
 

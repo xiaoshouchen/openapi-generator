@@ -3,11 +3,11 @@ package main
 import (
 	"encoding/json"
 	"flag"
-	"github.com/xiaoshouchen/openapi-go-generator/internal/fetcher"
-	"github.com/xiaoshouchen/openapi-go-generator/internal/generator"
-	"github.com/xiaoshouchen/openapi-go-generator/internal/model"
-	"github.com/xiaoshouchen/openapi-go-generator/internal/parser"
-	"github.com/xiaoshouchen/openapi-go-generator/internal/process"
+	"github.com/xiaoshouchen/openapi-generator/internal/fetcher"
+	"github.com/xiaoshouchen/openapi-generator/internal/generator"
+	"github.com/xiaoshouchen/openapi-generator/internal/model"
+	"github.com/xiaoshouchen/openapi-generator/internal/parser"
+	"github.com/xiaoshouchen/openapi-generator/internal/process"
 	"log"
 	"os"
 )

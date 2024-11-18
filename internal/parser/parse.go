@@ -2,7 +2,7 @@ package parser
 
 import (
 	"encoding/json"
-	"github.com/xiaoshouchen/openapi-go-generator/internal/model"
+	"github.com/xiaoshouchen/openapi-generator/internal/model"
 	"gopkg.in/yaml.v3"
 )
 
