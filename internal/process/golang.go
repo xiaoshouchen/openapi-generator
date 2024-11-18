@@ -7,6 +7,7 @@ import (
 	"github.com/xiaoshouchen/openapi-go-generator/pkg"
 	"log"
 	"path/filepath"
+	"sort"
 	"strings"
 )
 
@@ -99,7 +100,27 @@ func (g *Golang) Process(schema *model.OpenAPISchema, generator generator.Genera
 		}
 		routers[pkg.GetTopLevelName(path)].Items = append(routers[pkg.GetTopLevelName(path)].Items, router)
 		routers[pkg.GetTopLevelName(path)].Imports = append(routers[pkg.GetTopLevelName(path)].Imports, controllerImportPath)
+		sort.Slice(structs, func(i, j int) bool {
+			return structs[i].Name < structs[j].Name
+		})
+		for k, v := range structs {
+			var rows = v.Rows
+			sort.Slice(rows, func(i, j int) bool {
+				return rows[i].Name < rows[j].Name
+			})
+			structs[k].Rows = rows
+		}
+		sort.Slice(responseStructs, func(i, j int) bool {
+			return responseStructs[i].Name < responseStructs[j].Name
+		})
 
+		for k, v := range responseStructs {
+			var rows = v.Rows
+			sort.Slice(rows, func(i, j int) bool {
+				return rows[i].Name < rows[j].Name
+			})
+			responseStructs[k].Rows = rows
+		}
 		generator.Request(g.config.OutPath, "server/request/"+path+".go", FuncMap(), map[string]interface{}{
 			"structs":     structs,
 			"packageName": packName,

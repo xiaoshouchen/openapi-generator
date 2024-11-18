@@ -2,11 +2,11 @@
 package router
 
 import (
-	"github.com/gin-gonic/gin"
-
    {{- range $v:= .importData}}
      "{{$v}}"
     {{- end}}
+
+    "github.com/gin-gonic/gin"
 )
 
 func Init{{.routerName | upCamel}}Router(ctx *gin.RouterGroup) {

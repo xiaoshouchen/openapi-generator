@@ -1,12 +1,13 @@
 package {{.packageName}}
 
 import (
-     "github.com/gin-gonic/gin"
      "panda-trip/internal/server/response"
 
     {{- range $k,$v := .importData}}
      {{$k|lowCamel}} "{{$v}}"
     {{- end}}
+
+    "github.com/gin-gonic/gin"
 )
 
 func {{.funcName}}(ctx *gin.Context) {
