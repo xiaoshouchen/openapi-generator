@@ -190,7 +190,11 @@ func (g *Golang) ProcessGetRequest(name string, parameters []model.Parameter) go
 	for _, param := range parameters {
 		var req goModel.RequestRow
 		req.Validate, req.Description = pkg.FormatDescription(param.Description)
-		req.Validate = strings.Join([]string{"required", req.Validate}, ",")
+		if param.Required {
+			req.Validate = strings.Join([]string{"required", req.Validate}, ",")
+		} else {
+			req.Validate = strings.Join([]string{"omitempty", req.Validate}, ",")
+		}
 		if temp := strings.Trim(req.Validate, ","); temp != "" {
 			req.Validate = temp
 		}
