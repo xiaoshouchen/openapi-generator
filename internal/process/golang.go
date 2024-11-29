@@ -22,6 +22,11 @@ func NewGolang(config model.Config) *Golang {
 // Process the json data
 // TODO support formData
 func (g *Golang) Process(schema *model.OpenAPISchema, generator generator.Generator) {
+	defer func() {
+		if err := recover(); err != nil {
+			log.Println(err)
+		}
+	}()
 	var routers = make(map[string]*goModel.Router)
 	for path, item := range schema.Paths {
 		var router goModel.RouterItem
@@ -44,6 +49,14 @@ func (g *Golang) Process(schema *model.OpenAPISchema, generator generator.Genera
 		if item.Post != nil {
 			method = "POST"
 			// Request 逻辑
+			if item.Post.RequestBody == nil {
+				log.Println("no request body", path)
+				continue
+			}
+			if item.Post.RequestBody.Content == nil {
+				log.Println("no request body", path)
+				continue
+			}
 			sch := item.Post.RequestBody.Content["application/json"].Schema
 			if schSch := sch.Schema; schSch != nil {
 				postRequests = g.processPostRequest("json", pkg.GetRequestName(path), schSch.Properties, []goModel.RequestStruct{}, schSch.Required)
