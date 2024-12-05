@@ -1,13 +1,5 @@
-{{- range .reqStructs }}
+{{- range .entities}}
 export interface {{.Name|upCamel}} {
-    {{- range .Rows }}
-    {{ .Name }}: {{ .DataType }};
-    {{- end }}
-}
-{{ end }}
-
-{{- range .respStructs }}
-export interface {{.Name|upCamel}}Resp {
     {{- range .Rows }}
     {{ .Name }}: {{ .DataType }};
     {{- end }}

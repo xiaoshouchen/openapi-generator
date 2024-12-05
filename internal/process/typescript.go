@@ -4,7 +4,6 @@ import (
 	"github.com/xiaoshouchen/openapi-generator/internal/enum"
 	"github.com/xiaoshouchen/openapi-generator/internal/generator"
 	"github.com/xiaoshouchen/openapi-generator/internal/model"
-	goModel "github.com/xiaoshouchen/openapi-generator/internal/model/golang"
 	tsModel "github.com/xiaoshouchen/openapi-generator/internal/model/typescript"
 	"github.com/xiaoshouchen/openapi-generator/pkg"
 	"log"
@@ -55,6 +54,15 @@ func (t *Typescript) Process(schema *model.OpenAPISchema, generator generator.Ge
 		apiMap[uniKey] = f
 		if item.Get != nil {
 			entityMap[uniKey] = append(entityMap[uniKey], t.ProcessGetRequest(t.getEntityName(path), item.Get.Parameters))
+			for k, v := range item.Get.Responses {
+				if k == "200" {
+					if jsonData, ok := v.Content["application/json"]; ok {
+						if sch := jsonData.Schema.Schema; sch != nil {
+							entityMap[uniKey] = append(entityMap[uniKey], t.processResponse(pkg.GetResponseName(path), sch.Properties, []tsModel.EntityStruct{})...)
+						}
+					}
+				}
+			}
 		}
 		if item.Post != nil {
 			// Request 逻辑
@@ -70,7 +78,17 @@ func (t *Typescript) Process(schema *model.OpenAPISchema, generator generator.Ge
 			if schSch := sch.Schema; schSch != nil {
 				entityMap[uniKey] = append(entityMap[uniKey], t.processPostRequest(t.getEntityName(path), schSch.Properties, []tsModel.EntityStruct{})...)
 			}
+			for k, v := range item.Post.Responses {
+				if k == "200" {
+					if jsonData, ok := v.Content["application/json"]; ok {
+						if sch := jsonData.Schema.Schema; sch != nil {
+							entityMap[uniKey] = append(entityMap[uniKey], t.processResponse(pkg.GetResponseName(path), sch.Properties, []tsModel.EntityStruct{})...)
+						}
+					}
+				}
+			}
 		}
+
 	}
 	for k, api := range apiMap {
 		_ = generator.Generate(enum.GeneratorTsApi, "api/"+k+".ts", FuncMap(), map[string]interface{}{
@@ -82,7 +100,7 @@ func (t *Typescript) Process(schema *model.OpenAPISchema, generator generator.Ge
 
 	for k, entities := range entityMap {
 		_ = generator.Generate(enum.GeneratorTsEntity, "types/"+k+".ts", FuncMap(), map[string]interface{}{
-			"reqStructs": entities,
+			"entities": entities,
 		})
 	}
 }
@@ -150,11 +168,11 @@ func (t *Typescript) processPostRequest(name string, schema model.SchemaProperti
 	return structs
 }
 
-func (t *Typescript) processResponse(name string, schema model.SchemaProperties, structs []goModel.ResponseStruct) []goModel.ResponseStruct {
-	var st goModel.ResponseStruct
+func (t *Typescript) processResponse(name string, schema model.SchemaProperties, structs []tsModel.EntityStruct) []tsModel.EntityStruct {
+	var st tsModel.EntityStruct
 	st.Name = name
 	for k, v := range schema {
-		var resp goModel.ResponseRow
+		var resp tsModel.EntityRow
 		resp.DataType = t.GoTypeMap(v.Type)
 		if resp.DataType == "object" {
 			resp.DataType = name + pkg.LineToUpCamel(k)
@@ -174,7 +192,7 @@ func (t *Typescript) processResponse(name string, schema model.SchemaProperties,
 	return structs
 }
 
-func (t *Typescript) arrayType(schOrArr *model.SchemaOrArray, parentName string, prefix string) (string, *model.Schema) {
+func (t *Typescript) arrayType(schOrArr *model.SchemaOrArray, parentName string, suffix string) (string, *model.Schema) {
 	if schOrArr == nil {
 		return "any[]", nil
 	}
@@ -182,10 +200,10 @@ func (t *Typescript) arrayType(schOrArr *model.SchemaOrArray, parentName string,
 		return "any[]", nil
 	}
 	if schOrArr.Schema.Type == "object" {
-		return prefix + parentName, schOrArr.Schema
+		return parentName + suffix, schOrArr.Schema
 	}
 	if schOrArr.Schema.Type == "array" {
-		return t.arrayType(schOrArr.Schema.Items, parentName, prefix+"[]")
+		return t.arrayType(schOrArr.Schema.Items, parentName, suffix+"[]")
 	}
 	return t.GoTypeMap(schOrArr.Schema.Type) + "[]", nil
 }
