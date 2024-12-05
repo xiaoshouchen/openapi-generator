@@ -1,6 +1,7 @@
 package process
 
 import (
+	"github.com/xiaoshouchen/openapi-generator/internal/enum"
 	"github.com/xiaoshouchen/openapi-generator/internal/generator"
 	"github.com/xiaoshouchen/openapi-generator/internal/model"
 	goModel "github.com/xiaoshouchen/openapi-generator/internal/model/golang"
@@ -134,17 +135,18 @@ func (g *Golang) Process(schema *model.OpenAPISchema, generator generator.Genera
 			})
 			responseStructs[k].Rows = rows
 		}
-		generator.Request(g.config.OutPath, "server/request/"+path+".go", FuncMap(), map[string]interface{}{
+
+		_ = generator.Generate(enum.GeneratorGoRequest, "server/request/"+path+".go", FuncMap(), map[string]interface{}{
 			"structs":     structs,
 			"packageName": packName,
 		})
 
-		generator.Response(g.config.OutPath, "server/response/"+path+".go", FuncMap(), map[string]interface{}{
+		_ = generator.Generate(enum.GeneratorGoResponse, "server/response/"+path+".go", FuncMap(), map[string]interface{}{
 			"structs":     responseStructs,
 			"packageName": packName,
 		})
 
-		generator.Controller(g.config.OutPath, "server/controller/"+path+".go", FuncMap(), map[string]interface{}{
+		_ = generator.Generate(enum.GeneratorGoController, "server/controller/"+path+".go", FuncMap(), map[string]interface{}{
 			"importData": map[string]string{
 				reqShortPath: reqImportPath,
 				svcShortPath: svcImportPath,
@@ -156,7 +158,7 @@ func (g *Golang) Process(schema *model.OpenAPISchema, generator generator.Genera
 			"funcName":     pkg.GetFuncName(path),
 		})
 
-		generator.Service(g.config.OutPath, "service/"+path+".go", FuncMap(), map[string]interface{}{
+		_ = generator.Generate(enum.GeneratorGoService, "service/"+path+".go", FuncMap(), map[string]interface{}{
 			"importData": map[string]string{
 				reqShortPath:  reqImportPath,
 				respShortPath: respImportPath,
@@ -173,7 +175,7 @@ func (g *Golang) Process(schema *model.OpenAPISchema, generator generator.Genera
 		sort.Slice(items, func(i, j int) bool {
 			return items[i].Path < items[j].Path
 		})
-		generator.Router(g.config.OutPath, "server/router/"+k+".go", FuncMap(), map[string]interface{}{
+		_ = generator.Generate(enum.GeneratorGoRouter, "server/router/"+k+".go", FuncMap(), map[string]interface{}{
 			"routerName": k,
 			"importData": v.Imports,
 			"routers":    v.Items,

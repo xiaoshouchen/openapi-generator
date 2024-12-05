@@ -6,7 +6,7 @@ import (
 )
 
 func LineToLowCamel(str string) string {
-	strSlice := strings.Split(strings.ToLower(str), "_")
+	strSlice := strings.Split(str, "_")
 	for k, s := range strSlice {
 		if k == 0 {
 			continue
@@ -20,7 +20,7 @@ func LineToUpCamel(str string) string {
 	if str == "" {
 		return ""
 	}
-	strSlice := strings.Split(strings.ToLower(str), "_")
+	strSlice := strings.Split(str, "_")
 	for k, s := range strSlice {
 		strSlice[k] = strings.ToUpper(s[:1]) + s[1:]
 	}

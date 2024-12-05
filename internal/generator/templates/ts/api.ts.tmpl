@@ -1,0 +1,12 @@
+import http from '@/api'
+import type {
+  {{- range .imports }}
+    {{.}},
+  {{- end}}
+} from '@/types/{{.importPath}}'
+
+{{- range .functions }}
+ export const {{.Name|lowCamel}} = (params: {{.Name|upCamel}}Req): Promise<{{.Name|upCamel}}Resp> => {
+  return http.{{.Method}}<{{.Name|upCamel}}Resp>('{{.Path}}', params, { headers: { noLoading: true } })
+ }
+{{end}}

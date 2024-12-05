@@ -18,6 +18,8 @@ func NewProcessor(conf model.Config) Processor {
 	switch conf.AimType {
 	case "go":
 		processor = NewGolang(conf)
+	case "ts":
+		processor = NewTypescript(conf)
 	default:
 		log.Fatal("不支持的类型")
 	}
