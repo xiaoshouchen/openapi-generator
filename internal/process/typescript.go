@@ -58,7 +58,7 @@ func (t *Typescript) Process(schema *model.OpenAPISchema, generator generator.Ge
 				if k == "200" {
 					if jsonData, ok := v.Content["application/json"]; ok {
 						if sch := jsonData.Schema.Schema; sch != nil {
-							entityMap[uniKey] = append(entityMap[uniKey], t.processResponse(pkg.GetResponseName(path), sch.Properties, []tsModel.EntityStruct{})...)
+							entityMap[uniKey] = append(entityMap[uniKey], t.processResponse(t.getEntityRespName(path), sch.Properties, []tsModel.EntityStruct{})...)
 						}
 					}
 				}
@@ -82,7 +82,7 @@ func (t *Typescript) Process(schema *model.OpenAPISchema, generator generator.Ge
 				if k == "200" {
 					if jsonData, ok := v.Content["application/json"]; ok {
 						if sch := jsonData.Schema.Schema; sch != nil {
-							entityMap[uniKey] = append(entityMap[uniKey], t.processResponse(pkg.GetResponseName(path), sch.Properties, []tsModel.EntityStruct{})...)
+							entityMap[uniKey] = append(entityMap[uniKey], t.processResponse(t.getEntityRespName(path), sch.Properties, []tsModel.EntityStruct{})...)
 						}
 					}
 				}
@@ -127,6 +127,14 @@ func (t *Typescript) getEntityName(path string) string {
 	params := strings.Split(strings.Trim(path, "/"), "/")
 	if len(params) == 3 {
 		return pkg.LineToUpCamel(params[1] + "_" + params[2] + "Req")
+	}
+	return path
+}
+
+func (t *Typescript) getEntityRespName(path string) string {
+	params := strings.Split(strings.Trim(path, "/"), "/")
+	if len(params) == 3 {
+		return pkg.LineToUpCamel(params[1] + "_" + params[2] + "Resp")
 	}
 	return path
 }
