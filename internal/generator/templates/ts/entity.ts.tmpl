@@ -1,4 +1,5 @@
 {{- range .entities}}
+{{- if eq (len .Rows)  0}}// eslint-disable-next-line @typescript-eslint/no-empty-object-type{{end}}
 export interface {{.Name|upCamel}} {
     {{- range .Rows }}
     {{ .Name }}: {{ .DataType }};

@@ -7,6 +7,7 @@ import (
 	tsModel "github.com/xiaoshouchen/openapi-generator/internal/model/typescript"
 	"github.com/xiaoshouchen/openapi-generator/pkg"
 	"log"
+	"sort"
 	"strings"
 )
 
@@ -91,15 +92,38 @@ func (t *Typescript) Process(schema *model.OpenAPISchema, generator generator.Ge
 
 	}
 	for k, api := range apiMap {
-		_ = generator.Generate(enum.GeneratorTsApi, "api/"+k+".ts", FuncMap(), map[string]interface{}{
-			"functions":  api.Functions,
-			"imports":    api.Imports,
+		functions := api.Functions
+		// 排序
+		sort.Slice(functions, func(i, j int) bool {
+			// 根据name进行排序
+			return functions[i].Name < functions[j].Name
+		})
+		imports := api.Imports
+		sort.Slice(imports, func(i, j int) bool {
+			// 根据name进行排序
+			return imports[i] < imports[j]
+		})
+		_ = generator.Generate(enum.GeneratorTsApi, pkg.LineToLowCamel("api/modules/"+k+".ts"), FuncMap(), map[string]interface{}{
+			"functions":  functions,
+			"imports":    imports,
 			"importPath": pkg.LineToLowCamel(k),
 		})
 	}
 
 	for k, entities := range entityMap {
-		_ = generator.Generate(enum.GeneratorTsEntity, "types/"+k+".ts", FuncMap(), map[string]interface{}{
+		// 排序
+		for index, entity := range entities {
+			sort.Slice(entity.Rows, func(i, j int) bool {
+				// 根据name进行排序
+				return entity.Rows[i].Name < entity.Rows[j].Name
+			})
+			entities[index] = entity
+		}
+		sort.Slice(entities, func(i, j int) bool {
+			// 根据name进行排序
+			return entities[i].Name < entities[j].Name
+		})
+		_ = generator.Generate(enum.GeneratorTsEntity, pkg.LineToLowCamel("types/"+k+".ts"), FuncMap(), map[string]interface{}{
 			"entities": entities,
 		})
 	}
