@@ -2,13 +2,14 @@ package generator
 
 import (
 	"bytes"
-	"github.com/xiaoshouchen/openapi-generator/internal/model"
-	"github.com/xiaoshouchen/openapi-generator/pkg"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
 	"text/template"
+
+	"github.com/xiaoshouchen/openapi-generator/internal/model"
+	"github.com/xiaoshouchen/openapi-generator/pkg"
 )
 
 type genConfig struct {

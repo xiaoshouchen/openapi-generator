@@ -3,9 +3,10 @@ package fetcher
 import (
 	"bytes"
 	"fmt"
-	"github.com/xiaoshouchen/openapi-generator/internal/model"
 	"io"
 	"net/http"
+
+	"github.com/xiaoshouchen/openapi-generator/internal/model"
 )
 
 type Apifox struct {

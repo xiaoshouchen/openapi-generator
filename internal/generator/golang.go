@@ -2,10 +2,11 @@ package generator
 
 import (
 	_ "embed"
-	"github.com/xiaoshouchen/openapi-generator/internal/enum"
-	"github.com/xiaoshouchen/openapi-generator/internal/model"
 	"go/format"
 	"log"
+
+	"github.com/xiaoshouchen/openapi-generator/internal/enum"
+	"github.com/xiaoshouchen/openapi-generator/internal/model"
 )
 
 type GoGenerator struct {
