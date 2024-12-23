@@ -1,6 +1,7 @@
 package process
 
 import (
+	"fmt"
 	"github.com/xiaoshouchen/openapi-generator/internal/enum"
 	"github.com/xiaoshouchen/openapi-generator/internal/generator"
 	"github.com/xiaoshouchen/openapi-generator/internal/model"
@@ -224,6 +225,7 @@ func (g *Golang) ProcessGetRequest(name string, parameters []model.Parameter) go
 
 func (g *Golang) processPostRequest(bindType, name string, schema model.SchemaProperties, structs []goModel.RequestStruct, required []string) []goModel.RequestStruct {
 	var st goModel.RequestStruct
+	// 兼容多维数组
 	st.Name = name
 	in, err := pkg.NewQuickInArray(required)
 	if err != nil {
@@ -249,9 +251,10 @@ func (g *Golang) processPostRequest(bindType, name string, schema model.SchemaPr
 		}
 		if req.DataType == "array" {
 			var items *model.Schema
-			req.DataType, items = g.arrayType(v.Items, k, "[]")
+			fmt.Println(k)
+			req.DataType, items = g.arrayType(v.Items, name+pkg.LineToUpCamel(k), "[]")
 			if items != nil {
-				structs = g.processPostRequest(bindType, name, items.Properties, structs, items.Required)
+				structs = g.processPostRequest(bindType, name+pkg.LineToUpCamel(k), items.Properties, structs, items.Required)
 			}
 		}
 		req.Name = k

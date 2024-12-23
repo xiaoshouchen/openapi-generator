@@ -188,9 +188,9 @@ func (t *Typescript) processPostRequest(name string, schema model.SchemaProperti
 		}
 		if req.DataType == "array" {
 			var items *model.Schema
-			req.DataType, items = t.arrayType(v.Items, k, "[]")
+			req.DataType, items = t.arrayType(v.Items, name+pkg.LineToUpCamel(k), "[]")
 			if items != nil {
-				structs = t.processPostRequest(name, items.Properties, structs)
+				structs = t.processPostRequest(name+pkg.LineToUpCamel(k), items.Properties, structs)
 			}
 		}
 		req.Name = k
