@@ -49,10 +49,7 @@ func (t *Typescript) Process(schema *model.OpenAPISchema, generator generator.Ge
 			Method: "get",
 			Name:   funcName,
 		}
-		f := apiMap[uniKey]
-		f.Functions = append(f.Functions, apiFunc)
-		f.Imports = append(f.Imports, pkg.LineToUpCamel(funcName)+"Req", pkg.LineToUpCamel(funcName)+"Resp")
-		apiMap[uniKey] = f
+
 		if item.Get != nil {
 			entityMap[uniKey] = append(entityMap[uniKey], t.ProcessGetRequest(t.getEntityName(path), item.Get.Parameters))
 			for k, v := range item.Get.Responses {
@@ -66,6 +63,7 @@ func (t *Typescript) Process(schema *model.OpenAPISchema, generator generator.Ge
 			}
 		}
 		if item.Post != nil {
+			apiFunc.Method = "post"
 			// Request 逻辑
 			if item.Post.RequestBody == nil {
 				log.Println("no request body", path)
@@ -89,8 +87,12 @@ func (t *Typescript) Process(schema *model.OpenAPISchema, generator generator.Ge
 				}
 			}
 		}
-
+		f := apiMap[uniKey]
+		f.Functions = append(f.Functions, apiFunc)
+		f.Imports = append(f.Imports, pkg.LineToUpCamel(funcName)+"Req", pkg.LineToUpCamel(funcName)+"Resp")
+		apiMap[uniKey] = f
 	}
+
 	for k, api := range apiMap {
 		functions := api.Functions
 		// 排序
