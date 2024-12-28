@@ -1,16 +1,16 @@
 package process
 
 import (
-	"fmt"
+	"log"
+	"path/filepath"
+	"sort"
+	"strings"
+
 	"github.com/xiaoshouchen/openapi-generator/internal/enum"
 	"github.com/xiaoshouchen/openapi-generator/internal/generator"
 	"github.com/xiaoshouchen/openapi-generator/internal/model"
 	goModel "github.com/xiaoshouchen/openapi-generator/internal/model/golang"
 	"github.com/xiaoshouchen/openapi-generator/pkg"
-	"log"
-	"path/filepath"
-	"sort"
-	"strings"
 )
 
 type Golang struct {
@@ -251,7 +251,6 @@ func (g *Golang) processPostRequest(bindType, name string, schema model.SchemaPr
 		}
 		if req.DataType == "array" {
 			var items *model.Schema
-			fmt.Println(k)
 			req.DataType, items = g.arrayType(v.Items, name+pkg.LineToUpCamel(k), "[]")
 			if items != nil {
 				structs = g.processPostRequest(bindType, name+pkg.LineToUpCamel(k), items.Properties, structs, items.Required)
