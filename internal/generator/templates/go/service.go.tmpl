@@ -1,7 +1,7 @@
 package {{.packageName}}
 
 import (
-     "panda-trip/internal/enum/sys_cache"
+     "panda-trip/internal/enum/sys_enum"
 
     {{- range $k,$v:=.importData}}
      {{$k|lowCamel}} "{{$v}}"
@@ -18,8 +18,8 @@ func New{{.funcName}}Service(ctx *gin.Context)*{{.funcName}}Service {
 
 func (s *{{.funcName}}Service){{.funcName}}(request  *{{.reqShortPath|lowCamel}}.{{.funcName}}Req) *{{.respShortPath|lowCamel}}.{{.funcName}}Resp {
 	resp := &{{.respShortPath|lowCamel}}.{{.funcName}}Resp{
-        Code:    sys_cache.ResponseCodeSuccess,
-        Message: sys_cache.ResponseMessageSuccess,
+        Code:    sys_enum.ResponseCodeSuccess,
+        Message: sys_enum.ResponseMessageSuccess,
 	}
 	//TODO
 	return resp
