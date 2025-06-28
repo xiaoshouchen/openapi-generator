@@ -6,6 +6,7 @@ type EntityStruct struct {
 }
 
 type EntityRow struct {
-	Name     string
-	DataType string
+	Name       string
+	DataType   string
+	Annotation string
 }

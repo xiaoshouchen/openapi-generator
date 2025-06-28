@@ -176,6 +176,7 @@ func (t *Typescript) ProcessGetRequest(name string, parameters []model.Parameter
 		if !param.Required {
 			req.Name += "?"
 		}
+		req.Annotation = param.Description
 		st.Rows = append(st.Rows, req)
 	}
 
@@ -207,6 +208,7 @@ func (t *Typescript) processPostRequest(name string, schema model.SchemaProperti
 		if !in.InArray(k) {
 			req.Name += "?"
 		}
+		req.Annotation = v.Description
 		st.Rows = append(st.Rows, req)
 	}
 	structs = append(structs, st)
@@ -231,6 +233,7 @@ func (t *Typescript) processResponse(name string, schema model.SchemaProperties,
 			}
 		}
 		resp.Name = k
+		resp.Annotation = v.Description
 		st.Rows = append(st.Rows, resp)
 	}
 	structs = append(structs, st)
