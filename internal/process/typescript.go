@@ -204,7 +204,7 @@ func (t *Typescript) processPostRequest(name string, schema model.SchemaProperti
 			}
 		}
 		req.Name = k
-		if in.InArray(k) {
+		if !in.InArray(k) {
 			req.Name += "?"
 		}
 		st.Rows = append(st.Rows, req)
