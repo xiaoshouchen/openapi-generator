@@ -1,14 +1,15 @@
 package process
 
 import (
+	"log"
+	"sort"
+	"strings"
+
 	"github.com/xiaoshouchen/openapi-generator/internal/enum"
 	"github.com/xiaoshouchen/openapi-generator/internal/generator"
 	"github.com/xiaoshouchen/openapi-generator/internal/model"
 	tsModel "github.com/xiaoshouchen/openapi-generator/internal/model/typescript"
 	"github.com/xiaoshouchen/openapi-generator/pkg"
-	"log"
-	"sort"
-	"strings"
 )
 
 type Typescript struct {
@@ -75,7 +76,7 @@ func (t *Typescript) Process(schema *model.OpenAPISchema, generator generator.Ge
 			}
 			sch := item.Post.RequestBody.Content["application/json"].Schema
 			if schSch := sch.Schema; schSch != nil {
-				entityMap[uniKey] = append(entityMap[uniKey], t.processPostRequest(t.getEntityName(path), schSch.Properties, []tsModel.EntityStruct{})...)
+				entityMap[uniKey] = append(entityMap[uniKey], t.processPostRequest(t.getEntityName(path), schSch.Properties, []tsModel.EntityStruct{}, schSch.Required)...)
 			}
 			for k, v := range item.Post.Responses {
 				if k == "200" {
@@ -172,30 +173,40 @@ func (t *Typescript) ProcessGetRequest(name string, parameters []model.Parameter
 		var req tsModel.EntityRow
 		req.DataType = t.GoTypeMap(param.Schema.Type)
 		req.Name = param.Name
+		if !param.Required {
+			req.Name += "?"
+		}
 		st.Rows = append(st.Rows, req)
 	}
 
 	return st
 }
 
-func (t *Typescript) processPostRequest(name string, schema model.SchemaProperties, structs []tsModel.EntityStruct) []tsModel.EntityStruct {
+func (t *Typescript) processPostRequest(name string, schema model.SchemaProperties, structs []tsModel.EntityStruct, required []string) []tsModel.EntityStruct {
 	var st tsModel.EntityStruct
+	in, err := pkg.NewQuickInArray(required)
+	if err != nil {
+		log.Println(err)
+	}
 	st.Name = name
 	for k, v := range schema {
 		var req tsModel.EntityRow
 		req.DataType = t.GoTypeMap(v.Type)
 		if req.DataType == "object" {
 			req.DataType = name + pkg.LineToUpCamel(k)
-			structs = t.processPostRequest(name+pkg.LineToUpCamel(k), v.Properties, structs)
+			structs = t.processPostRequest(name+pkg.LineToUpCamel(k), v.Properties, structs, v.Required)
 		}
 		if req.DataType == "array" {
 			var items *model.Schema
 			req.DataType, items = t.arrayType(v.Items, name+pkg.LineToUpCamel(k), "[]")
 			if items != nil {
-				structs = t.processPostRequest(name+pkg.LineToUpCamel(k), items.Properties, structs)
+				structs = t.processPostRequest(name+pkg.LineToUpCamel(k), items.Properties, structs, items.Required)
 			}
 		}
 		req.Name = k
+		if in.InArray(k) {
+			req.Name += "?"
+		}
 		st.Rows = append(st.Rows, req)
 	}
 	structs = append(structs, st)
