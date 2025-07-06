@@ -4,7 +4,7 @@ package {{.packageName}}
 {{- range .structs }}
 type {{ .Name }} struct {
     {{- range .Rows }}
-    {{ .Name | upCamel  }} {{ .DataType }} `json:"{{ .Name  }}"`{{- if .Description }} // {{ .Description }}{{- end }}
+    {{ .Name | upCamel  }} {{ .DataType }} `json:"{{ .Name  }}{{- if .OmitEmpty }},omitempty{{- end }}"`{{- if .Description }} // {{ .Description }}{{- end }}
     {{- end }}
 }
 {{ end }}

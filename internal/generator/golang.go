@@ -43,6 +43,9 @@ var serviceTpl string
 //go:embed templates/go/router.go.tmpl
 var routerTpl string
 
+//go:embed templates/go/response_func.go.tmpl
+var responseFuncTpl string
+
 func (g *GoGenerator) parseGenType(genType string, path string) genConfig {
 	switch genType {
 	case enum.GeneratorGoRequest:
@@ -79,6 +82,13 @@ func (g *GoGenerator) parseGenType(genType string, path string) genConfig {
 			file:      path,
 			overwrite: false,
 			tpl:       serviceTpl,
+		}
+	case enum.GeneratorGoResponseFunc:
+		return genConfig{
+			path:      g.config.OutPath,
+			file:      path,
+			overwrite: false,
+			tpl:       responseFuncTpl,
 		}
 	default:
 		return genConfig{}

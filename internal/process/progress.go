@@ -1,11 +1,14 @@
 package process
 
 import (
+	"html/template"
+	"log"
+	"os"
+	"path/filepath"
+
 	"github.com/xiaoshouchen/openapi-generator/internal/generator"
 	"github.com/xiaoshouchen/openapi-generator/internal/model"
 	"github.com/xiaoshouchen/openapi-generator/pkg"
-	"html/template"
-	"log"
 )
 
 // Processor Process Raw Data and produce final data
@@ -31,5 +34,18 @@ func FuncMap() template.FuncMap {
 		"lowCamel": pkg.LineToLowCamel,
 		"upCamel":  pkg.LineToUpCamel,
 		"inline":   pkg.Inline,
+	}
+}
+
+// 支持模糊匹配删除文件
+func deleteFile(path string) {
+	files, err := filepath.Glob(path)
+	if err != nil {
+		log.Println(err)
+	}
+	for _, file := range files {
+		if err := os.Remove(file); err != nil {
+			log.Println(err)
+		}
 	}
 }

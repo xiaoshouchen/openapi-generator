@@ -9,4 +9,5 @@ type ResponseRow struct {
 	DataType    string
 	Name        string
 	Description string
+	OmitEmpty   bool
 }

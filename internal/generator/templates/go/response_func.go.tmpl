@@ -1,0 +1,42 @@
+package response
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+const (
+	HttpStatusOK         = 200
+	HttpStatusBadRequest = 400
+)
+
+const (
+	CodeSuccess = 200
+	CodeFail    = 400
+)
+
+// Success 返回正确结果
+func Success(c *gin.Context, data interface{}) {
+	c.JSON(HttpStatusOK, gin.H{"code": CodeSuccess, "message": "成功", "data": data})
+}
+
+func SuccessWithCode(c *gin.Context, code int, data interface{}) {
+	c.JSON(HttpStatusOK, gin.H{"code": code, "message": "成功", "data": data})
+}
+
+func Fail(c *gin.Context, message string, data interface{}) {
+	jsonData := gin.H{"code": CodeFail, "message": message, "data": struct {
+	}{}}
+	if data != nil {
+		jsonData["data"] = data
+	}
+	c.JSON(HttpStatusOK, jsonData)
+
+	c.Abort()
+}
+
+func FailWithCode(c *gin.Context, code int, message string, data interface{}) {
+	c.JSON(http.StatusOK, gin.H{"code": code, "message": message, "data": data})
+	c.Abort()
+}

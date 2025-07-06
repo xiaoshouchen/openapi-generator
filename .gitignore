@@ -2,3 +2,5 @@
 openapi.json
 gen
 /openapi-conf.json
+server
+service

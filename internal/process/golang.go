@@ -2,6 +2,7 @@ package process
 
 import (
 	"log"
+	"os"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -29,16 +30,31 @@ func (g *Golang) Process(schema *model.OpenAPISchema, generator generator.Genera
 			log.Println(err)
 		}
 	}()
+
+	var commonPath = g.config.ProjectName + "/" + g.config.OutPath + "/"
+	// 删除旧文件，防止有残留的文件
+	log.Println("删除旧文件", g.config.OutPath+"/server/request")
+	if err := os.RemoveAll(g.config.OutPath + "/server/request"); err != nil {
+		log.Println("删除旧文件失败", err)
+	}
+	log.Println("删除旧文件", g.config.OutPath+"/server/response")
+	if err := os.RemoveAll(g.config.OutPath + "/server/response"); err != nil {
+		log.Println("删除旧文件失败", err)
+	}
+	log.Println("删除旧文件", g.config.OutPath+"/server/controller")
+	if err := os.RemoveAll(g.config.OutPath + "/server/controller"); err != nil {
+		log.Println("删除旧文件失败", err)
+	}
 	var routers = make(map[string]*goModel.Router)
 	for path, item := range schema.Paths {
 		var router goModel.RouterItem
 		var method string
 		// packageName
 		packName := pkg.GetPackageName(path)
-		reqImportPath := g.config.ProjectName + "/" + g.config.OutPath + "/" + "server/request" + filepath.Dir(path+".go")
-		respImportPath := g.config.ProjectName + "/" + g.config.OutPath + "/" + "server/response" + filepath.Dir(path+".go")
-		svcImportPath := g.config.ProjectName + "/" + g.config.OutPath + "/" + "service" + filepath.Dir(path+".go")
-		controllerImportPath := g.config.ProjectName + "/" + g.config.OutPath + "/" + "server/controller" + filepath.Dir(path+".go")
+		reqImportPath := commonPath + "server/request" + filepath.Dir(path+".go")
+		respImportPath := commonPath + "server/response" + filepath.Dir(path+".go")
+		svcImportPath := commonPath + "service" + filepath.Dir(path+".go")
+		controllerImportPath := commonPath + "server/controller" + filepath.Dir(path+".go")
 		reqShortPath := packName + "_request"
 		respShortPath := packName + "_response"
 		svcShortPath := packName + "_service"
@@ -78,7 +94,7 @@ func (g *Golang) Process(schema *model.OpenAPISchema, generator generator.Genera
 				if k == "200" {
 					if jsonData, ok := v.Content["application/json"]; ok {
 						if sch := jsonData.Schema.Schema; sch != nil {
-							responseStructs = g.processResponse(pkg.GetResponseName(path), sch.Properties, []goModel.ResponseStruct{})
+							responseStructs = g.processResponse(pkg.GetResponseName(path), sch.Properties, []goModel.ResponseStruct{}, sch.Required)
 						}
 					}
 				}
@@ -96,7 +112,7 @@ func (g *Golang) Process(schema *model.OpenAPISchema, generator generator.Genera
 				if k == "200" {
 					if jsonData, ok := v.Content["application/json"]; ok {
 						if sch := jsonData.Schema.Schema; sch != nil {
-							responseStructs = g.processResponse(pkg.GetResponseName(path), sch.Properties, []goModel.ResponseStruct{})
+							responseStructs = g.processResponse(pkg.GetResponseName(path), sch.Properties, []goModel.ResponseStruct{}, sch.Required)
 						}
 					}
 				}
@@ -182,6 +198,7 @@ func (g *Golang) Process(schema *model.OpenAPISchema, generator generator.Genera
 			"routers":    v.Items,
 		})
 	}
+	_ = generator.Generate(enum.GeneratorGoResponseFunc, "server/response/response.go", FuncMap(), map[string]interface{}{})
 
 }
 
@@ -264,24 +281,36 @@ func (g *Golang) processPostRequest(bindType, name string, schema model.SchemaPr
 	return structs
 }
 
-func (g *Golang) processResponse(name string, schema model.SchemaProperties, structs []goModel.ResponseStruct) []goModel.ResponseStruct {
+func (g *Golang) processResponse(name string, schema model.SchemaProperties, structs []goModel.ResponseStruct, required []string) []goModel.ResponseStruct {
 	var st goModel.ResponseStruct
 	st.Name = name
+	in, err := pkg.NewQuickInArray(required)
+	if err != nil {
+		log.Println(err)
+	}
 	for k, v := range schema {
 		var resp goModel.ResponseRow
 		resp.DataType = g.GoTypeMap(v.Type)
 		if resp.DataType == "object" {
 			resp.DataType = name + pkg.LineToUpCamel(k)
-			structs = g.processResponse(name+pkg.LineToUpCamel(k), v.Properties, structs)
+			structs = g.processResponse(name+pkg.LineToUpCamel(k), v.Properties, structs, v.Required)
 		}
 		if resp.DataType == "array" {
 			var items *model.Schema
 			resp.DataType, items = g.arrayType(v.Items, name+pkg.LineToUpCamel(k), "[]")
 			if items != nil {
-				structs = g.processResponse(name+pkg.LineToUpCamel(k), items.Properties, structs)
+				structs = g.processResponse(name+pkg.LineToUpCamel(k), items.Properties, structs, items.Required)
 			}
 		}
 		resp.Name = k
+		if !in.InArray(k) {
+			resp.OmitEmpty = true
+			if v.Type == "object" {
+				resp.DataType = "*" + resp.DataType
+				//fmt.Println(resp.DataType)
+			}
+		}
+		resp.Description = v.Description
 		st.Rows = append(st.Rows, resp)
 	}
 	structs = append(structs, st)
