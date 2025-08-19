@@ -3,19 +3,27 @@ package main
 import (
 	"encoding/json"
 	"flag"
+	"log"
+	"os"
+
 	"github.com/xiaoshouchen/openapi-generator/internal/fetcher"
 	"github.com/xiaoshouchen/openapi-generator/internal/generator"
 	"github.com/xiaoshouchen/openapi-generator/internal/model"
 	"github.com/xiaoshouchen/openapi-generator/internal/parser"
 	"github.com/xiaoshouchen/openapi-generator/internal/process"
-	"log"
-	"os"
 )
 
 var configPath = flag.String("f", "openapi-conf.json", "配置文件")
 
 func main() {
 	flag.Parse()
+
+	args := flag.Args()
+	if len(args) > 0 && args[0] == "tmpl" {
+		generator.InitTemplates()
+		return
+	}
+
 	file, err := os.ReadFile(*configPath)
 	if err != nil {
 		return

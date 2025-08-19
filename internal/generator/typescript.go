@@ -30,14 +30,14 @@ func (t *TsGenerator) parseGenType(genType string, path string) genConfig {
 			path:      t.config.OutPath,
 			file:      path,
 			overwrite: true,
-			tpl:       tsApiTpl,
+			tpl:       getTpl(tsApiTpl, "ts/api.ts.tmpl"),
 		}
 	case enum.GeneratorTsEntity:
 		return genConfig{
 			path:      t.config.OutPath,
 			file:      path,
 			overwrite: true,
-			tpl:       tsEntityTpl,
+			tpl:       getTpl(tsEntityTpl, "ts/entity.ts.tmpl"),
 		}
 	}
 	return genConfig{}

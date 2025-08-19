@@ -4,9 +4,12 @@ import (
 	_ "embed"
 	"go/format"
 	"log"
+	"os"
+	"path/filepath"
 
 	"github.com/xiaoshouchen/openapi-generator/internal/enum"
 	"github.com/xiaoshouchen/openapi-generator/internal/model"
+	"github.com/xiaoshouchen/openapi-generator/pkg"
 )
 
 type GoGenerator struct {
@@ -46,6 +49,19 @@ var routerTpl string
 //go:embed templates/go/response_func.go.tmpl
 var responseFuncTpl string
 
+func getTpl(embeddedTpl, tplPath string) string {
+	localTplPath := filepath.Join(".templates", tplPath)
+	exists, err := pkg.FileExists(localTplPath)
+	if err != nil || !exists {
+		return embeddedTpl
+	}
+	content, err := os.ReadFile(localTplPath)
+	if err != nil {
+		return embeddedTpl
+	}
+	return string(content)
+}
+
 func (g *GoGenerator) parseGenType(genType string, path string) genConfig {
 	switch genType {
 	case enum.GeneratorGoRequest:
@@ -53,42 +69,42 @@ func (g *GoGenerator) parseGenType(genType string, path string) genConfig {
 			path:      g.config.OutPath,
 			file:      path,
 			overwrite: true,
-			tpl:       requestTpl,
+			tpl:       getTpl(requestTpl, "go/request.go.tmpl"),
 		}
 	case enum.GeneratorGoResponse:
 		return genConfig{
 			path:      g.config.OutPath,
 			file:      path,
 			overwrite: true,
-			tpl:       responseTpl,
+			tpl:       getTpl(responseTpl, "go/response.go.tmpl"),
 		}
 	case enum.GeneratorGoController:
 		return genConfig{
 			path:      g.config.OutPath,
 			file:      path,
 			overwrite: true,
-			tpl:       controllerTpl,
+			tpl:       getTpl(controllerTpl, "go/controller.go.tmpl"),
 		}
 	case enum.GeneratorGoRouter:
 		return genConfig{
 			path:      g.config.OutPath,
 			file:      path,
 			overwrite: true,
-			tpl:       routerTpl,
+			tpl:       getTpl(routerTpl, "go/router.go.tmpl"),
 		}
 	case enum.GeneratorGoService:
 		return genConfig{
 			path:      g.config.OutPath,
 			file:      path,
 			overwrite: false,
-			tpl:       serviceTpl,
+			tpl:       getTpl(serviceTpl, "go/service.go.tmpl"),
 		}
 	case enum.GeneratorGoResponseFunc:
 		return genConfig{
 			path:      g.config.OutPath,
 			file:      path,
 			overwrite: false,
-			tpl:       responseFuncTpl,
+			tpl:       getTpl(responseFuncTpl, "go/response_func.go.tmpl"),
 		}
 	default:
 		return genConfig{}

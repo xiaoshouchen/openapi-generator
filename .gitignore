@@ -4,3 +4,4 @@ gen
 /openapi-conf.json
 server
 service
+.templates
